@@ -1,103 +1,117 @@
+"use client"
+
+import { useState } from "react";
 import Image from "next/image";
+import "./globals.css";
+
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const [selectedItem, setSelectedItem] = useState("default");
+  // const [otherValue, setOtherValue] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [cartItems, setCartItems] = useState<{ item: string; quantity: number }[]>([]);
+
+  function handleSubmit() {
+    fetch("/api/records", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cartItems)
+    })
+      .then((response) => {
+        if (response.ok) {
+          alert("Records saved successfully");
+        } else {
+          alert("Failed to save records");
+        }
+      });
+  }
+
+  function handleAddToCart() {
+    if (quantity === 0) {
+      alert("Please enter a valid quantity");
+      return;
+    } else {
+      const exists = cartItems.find(cartItem => cartItem.item === selectedItem);
+      if (exists) {
+        setCartItems(cartItems.map(cartItem =>
+          cartItem.item === selectedItem
+            ? { ...cartItem, quantity: cartItem.quantity + quantity }
+            : cartItem
+        ));
+      } else {
+        setCartItems([...cartItems, { item: selectedItem, quantity: quantity }]);
+      }
+      setTotalCount(totalCount + quantity);
+      setSelectedItem("default");
+      setQuantity(0);
+    }
+  };
+
+  return (
+    <main className="font-sec flex flex-col flex-grow items-center">
+      <div className="flex gap-5 mt-10">
+        <Image
+          src="/iron.svg"
+          alt="Iron icon"
+          width={40}
+          height={40}
+        />
+        <h1 className="font-prim font-bold text-4xl">Dhobi Tracker</h1>
+      </div>
+      <form className="flex flex-col items-center gap-4 my-10" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+        <div className="flex gap-4 items-center">
+          <select onChange={(e) => setSelectedItem(e.target.value)} name="item" value={selectedItem} className="border border-gray-300 rounded-md p-2 text-center form-select appearance-none pr-8 pl-2 bg-no-repeat cursor-pointer">
+            <option value="default" defaultChecked className="text-black">Select Item</option>
+            <option value="shirt" className="text-black">Shirt</option>
+            <option value="pant" className="text-black">Pant</option>
+            <option value="saree" className="text-black">Saree</option>
+            <option value="dress" className="text-black">Dress</option>
+            {/* <option value="other" className="text-black">Other</option> */}
+          </select>
+          {/* {selectedItem === "other" && (
+            <input type="text" name="otherItem" placeholder="Enter other item"
+              className="border border-gray-300 rounded-md p-2"
+              value={otherValue}
+              onChange={(e) => setOtherValue(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          )} */}
+          <input type="number" name="quantity" value={quantity} className="w-20 border border-gray-300 rounded-md p-2"
+            onChange={(e) => setQuantity(Number(e.target.value))} />
+          <button type="button" className="text-white rounded-md border p-2 cursor-pointer" onClick={() => {
+            // if (selectedItem === "other" && otherValue.trim() === "") {
+            //   alert("Please enter a valid item name");
+            //   return;
+            // }
+            // const itemName = selectedItem === "other" ? otherValue.trim() : selectedItem;
+            // handleAddToCart(itemName);
+            handleAddToCart();
+          }}>
+            <Image src="/add.svg" alt="Add to Cart" width={20} height={20} />
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        {totalCount > 0 && (
+          <div className="text-center">
+            <p className="font-prim">Items Added:</p>
+            <ul className="list-none text-lg">
+              {cartItems.map((cartItem, index) => (
+                <li key={index}>{cartItem.item.charAt(0).toUpperCase() + cartItem.item.slice(1)} - {cartItem.quantity}</li>
+              ))}
+            </ul>
+            <p>Total Items: {totalCount}</p>
+          </div>
+        )}
+        <button type="submit" className="bg-green-400/70 text-white rounded-md px-4 py-2 cursor-pointer">Submit</button>
+      </form >
+      <button className="bg-blue-500 text-white rounded-md px-4 py-2 cursor-pointer self-center flex items-center" onClick={() => window.location.href = '/review'}>
+        Review
+        <span className="material-symbols-outlined font-light">
+          chevron_right
+        </span>
+      </button>
+    </main>
   );
 }

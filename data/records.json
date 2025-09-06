@@ -1,0 +1,16 @@
+[
+  {
+    "date": "Sat Sep 06 2025 19:24:31 GMT+0530 (India Standard Time)",
+    "items": [
+      {
+        "item": "pant",
+        "quantity": 1
+      },
+      {
+        "item": "dress",
+        "quantity": 3
+      }
+    ],
+    "totalPrice": 70
+  }
+]
