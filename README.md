@@ -78,6 +78,5 @@ This application uses a **JSON file-based storage system** to persist data. This
 *   **Enhanced UI:** Improve the user interface with better styling, animations, and user experience enhancements.
 *   **Data Backup/Export:** Implement a feature to export the data as a JSON file for backup purposes.
 *   **Sorting and Filtering:** Allow the user to sort and filter the entries in the table.
-*   **User Authentication:** Implement basic authentication for enhanced security (if it becomes necessary).
 
 **With 💖 for my mom**
