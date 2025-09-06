@@ -1,16 +1,26 @@
 [
   {
-    "date": "Sat Sep 06 2025 19:24:31 GMT+0530 (India Standard Time)",
+    "date": "Sun Sep 07 2025 01:40:59 GMT+0530 (India Standard Time)",
     "items": [
       {
-        "item": "pant",
-        "quantity": 1
-      },
-      {
-        "item": "dress",
-        "quantity": 3
+        "item": "saree",
+        "quantity": 11
       }
     ],
-    "totalPrice": 70
+    "totalPrice": 220
+  },
+  {
+    "date": "Sun Sep 07 2025 01:36:56 GMT+0530 (India Standard Time)",
+    "items": [
+      {
+        "item": "saree",
+        "quantity": 3
+      },
+      {
+        "item": "pant",
+        "quantity": 2
+      }
+    ],
+    "totalPrice": 80
   }
 ]

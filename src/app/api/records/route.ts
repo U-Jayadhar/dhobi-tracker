@@ -22,12 +22,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const records = await getRecords();
     const body = await req.json();
     const newRecords = {
-      date: new Date(),
+      date: new Date().toString(),
       items: body,
       totalPrice: body.reduce(
         (
           total: number,
-          clothes: { item: string; quantity: number }
+          clothes: { item: string; quantity: number },
         ): number => {
           if (clothes.item === "shirt" || clothes.item === "pant") {
             return total + clothes.quantity * 10;
@@ -36,15 +36,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
           }
           return total;
         },
-        0
+        0,
       ),
     };
-    const updatedRecords = [...records, newRecords];
+    const updatedRecords = [newRecords, ...records];
 
     const recordsPath = path.join(process.cwd(), "data", "records.json");
     await fs.promises.writeFile(
       recordsPath,
-      JSON.stringify(updatedRecords, null, 2)
+      JSON.stringify(updatedRecords, null, 2),
     );
     return NextResponse.json({
       message: "Records saved successfully",

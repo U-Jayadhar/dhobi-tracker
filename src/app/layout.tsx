@@ -24,7 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${inter.variable} antialiased h-full`}>
+    <html
+      lang="en"
+      className={`${dmSans.variable} ${inter.variable} antialiased h-full`}
+    >
       <body className="min-h-screen flex flex-col">
         {children}
         <Footer />
