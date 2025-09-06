@@ -8,16 +8,19 @@ async function getRecords() {
   return JSON.parse(data);
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest, { params }: { params: any }) {
   try {
     const records = await getRecords();
     return NextResponse.json(records, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to read records", status: 500 });
+    return NextResponse.json(
+      { error: "Failed to read records" },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest, { params }: { params: any }) {
   try {
     const records = await getRecords();
     const body = await req.json();
@@ -27,7 +30,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       totalPrice: body.reduce(
         (
           total: number,
-          clothes: { item: string; quantity: number },
+          clothes: { item: string; quantity: number }
         ): number => {
           if (clothes.item === "shirt" || clothes.item === "pant") {
             return total + clothes.quantity * 10;
@@ -36,7 +39,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           }
           return total;
         },
-        0,
+        0
       ),
     };
     const updatedRecords = [newRecords, ...records];
@@ -44,7 +47,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const recordsPath = path.join(process.cwd(), "data", "records.json");
     await fs.promises.writeFile(
       recordsPath,
-      JSON.stringify(updatedRecords, null, 2),
+      JSON.stringify(updatedRecords, null, 2)
     );
     return NextResponse.json({
       message: "Records saved successfully",
