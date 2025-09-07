@@ -2,10 +2,63 @@ import fs from "fs";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 
+const url = `https://api.github.com/gists/${process.env.GITHUB_GIST_ID}`;
+const token = process.env.GITHUB_TOKEN;
+
 async function getRecords() {
-  const recordsPath = path.join(process.cwd(), "data", "records.json");
-  const data = await fs.promises.readFile(recordsPath, "utf-8");
-  return JSON.parse(data);
+  try {
+    if (!url || !token) {
+      throw new Error("GITHUB_GIST_URL or GITHUB_TOKEN is not defined");
+    }
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    const records = JSON.parse(data.files["records.json"].content);
+    return records;
+  } catch (error) {
+    console.error("Error fetching records:", error);
+    return [];
+  }
+}
+
+async function saveRecords(records: any[]) {
+  try {
+    if (!url || !token) {
+      throw new Error("GITHUB_GIST_URL or GITHUB_TOKEN is not defined");
+    }
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        files: {
+          "records.json": {
+            content: JSON.stringify(records, null, 2),
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(
+        "Error updating Gist:",
+        response.status,
+        response.statusText,
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error updating Gist:", error);
+    return false;
+  }
 }
 
 export async function GET(req: NextRequest, { params }: { params: any }) {
@@ -15,22 +68,22 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to read records" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(req: NextRequest, { params }: { params: any }) {
   try {
-    const records = await getRecords();
     const body = await req.json();
+    const records = await getRecords();
     const newRecords = {
       date: new Date().toString(),
       items: body,
       totalPrice: body.reduce(
         (
           total: number,
-          clothes: { item: string; quantity: number }
+          clothes: { item: string; quantity: number },
         ): number => {
           if (clothes.item === "shirt" || clothes.item === "pant") {
             return total + clothes.quantity * 10;
@@ -39,16 +92,19 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
           }
           return total;
         },
-        0
+        0,
       ),
     };
     const updatedRecords = [newRecords, ...records];
 
-    const recordsPath = path.join(process.cwd(), "data", "records.json");
-    await fs.promises.writeFile(
-      recordsPath,
-      JSON.stringify(updatedRecords, null, 2)
-    );
+    const success = await saveRecords(updatedRecords);
+    console.log(success);
+    if (!success) {
+      return NextResponse.json({
+        error: "Failed to save records",
+        status: 500,
+      });
+    }
     return NextResponse.json({
       message: "Records saved successfully",
       status: 200,
