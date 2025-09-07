@@ -97,20 +97,24 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
     };
     const updatedRecords = [newRecords, ...records];
 
-    const success = await saveRecords(updatedRecords);
-    console.log(success);
-    if (!success) {
-      return NextResponse.json({
-        error: "Failed to save records",
-        status: 500,
-      });
+    const lastRes = await saveRecords(updatedRecords);
+    console.log(lastRes);
+    if (lastRes) {
+      return NextResponse.json(
+        { message: "Records saved successfully" },
+        { status: 200 },
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Failed to save records" },
+        { status: 500 },
+      );
     }
-    return NextResponse.json({
-      message: "Records saved successfully",
-      status: 200,
-    });
   } catch (error) {
     console.error("Error saving records:", error);
-    return NextResponse.json({ error: "Failed to save records", status: 500 });
+    return NextResponse.json(
+      { error: "Failed to save records" },
+      { status: 500 },
+    );
   }
 }
