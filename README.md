@@ -23,12 +23,13 @@ The Dhobi Tracker is a personal project created to assist in tracking laundry ex
 - **Date and Time Tracking:** Automatically records the date and time of each entry.
 - **Monthly Table View:** Displays all entries for the current month in a tabular format.
 - **Total Monthly Cost:** Calculates and displays the total cost for the entire month.
-- **JSON File Storage:** Uses a local JSON file to store the data, ensuring data persistence without requiring a database.
+- **JSON File Storage:** Uses GitHub Gists for JSON file to store the data.
 
 ## Tech Stack
 
 - **[Next.js](https://nextjs.org/):** React framework for building performant web applications.
 - **[Tailwind CSS](https://tailwindcss.com/):** Utility-first CSS framework for rapid UI development.
+- **[GitHub Gist](https://gist.github.com/):**  A service for sharing code snippets, notes, and other small pieces of text or code.
 
 ## Data Storage
 
