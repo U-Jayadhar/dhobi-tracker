@@ -35,7 +35,7 @@ The Dhobi Tracker is a personal project created to assist in tracking laundry ex
 
 This application uses a **JSON file-based storage system** to persist data. This approach was chosen for its simplicity and to avoid the complexity of setting up a database, making it ideal for a single-user application.
 
-- **File Location:** The data is stored in a file named `records.json`, located in the `data` directory at the root of the project (`/data/records.json`).
+- **File Location:** The data is stored in a file named `records.json`, located in the GitHub `Gist`.
 - **API Routes:** Next.js API routes are used to read and write data to the `records.json` file. The following API endpoints are available:
   - `GET /api/records`: Retrieves all records from the `records.json` file.
   - `POST /api/records`: Adds a new record to the `records.json` file.
