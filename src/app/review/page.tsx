@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 
 type RecordType = {
   date: string;
-  items: { item: string; quantity: number }[];
-  totalPrice: number;
+  items: number;
+  clothes: { [name: string]: { quantity: number; price: number } };
+  price: number;
 };
 
 export default function ReviewTable() {
@@ -75,18 +76,13 @@ export default function ReviewTable() {
                   "default",
                   { month: "long" },
                 );
-                const totalClothes = data.reduce((total, record) => {
-                  return (
-                    total +
-                    record.items.reduce(
-                      (itemTotal, item) => itemTotal + item.quantity,
-                      0,
-                    )
-                  );
-                }, 0);
+                const totalClothes = data.reduce(
+                  (total, record) => total + record.items,
+                  0,
+                );
                 const totalTimes = data.length;
-                const totalPrice = data.reduce(
-                  (total, record) => total + record.totalPrice,
+                const price = data.reduce(
+                  (total, record) => total + record.price,
                   0,
                 );
 
@@ -101,15 +97,18 @@ export default function ReviewTable() {
                         Times: {totalTimes}
                       </td>
                       <td className="border border-gray-300 p-3">
-                        Rs.{totalPrice}/-
+                        Rs.{price}/-
                       </td>
                     </tr>
                     {data.map(
                       (
                         record: {
                           date: string;
-                          items: { item: string; quantity: number }[];
-                          totalPrice: number;
+                          items: number;
+                          clothes: {
+                            [name: string]: { quantity: number; price: number };
+                          };
+                          price: number;
                         },
                         index,
                       ) => (
@@ -121,18 +120,20 @@ export default function ReviewTable() {
                             {formatDate(record.date)}
                           </td>
                           <td className="border border-gray-300 p-3">
-                            <div className="flex flex-col">
-                              {record.items.map((each, idx) => (
-                                <span key={idx}>
-                                  {each.item.charAt(0).toUpperCase() +
-                                    each.item.slice(1)}{" "}
-                                  - {each.quantity}
-                                </span>
-                              ))}
+                            <div className="flex flex-col text-start">
+                              {Object.entries(record.clothes).map(
+                                ([item, { quantity, price }], idx) => (
+                                  <span key={idx}>
+                                    {item.charAt(0).toUpperCase() +
+                                      item.slice(1)}{" "}
+                                    - {quantity}(₹{price})
+                                  </span>
+                                ),
+                              )}
                             </div>
                           </td>
                           <td className="border border-gray-300 p-3">
-                            Rs.{record.totalPrice}/-
+                            Rs.{record.price}/-
                           </td>
                         </tr>
                       ),

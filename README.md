@@ -75,7 +75,6 @@ This application uses a **JSON file-based storage system** to persist data. This
 
 - **Progressive Web App (PWA) Support:** Enable the application to be installed as a PWA, allowing offline access and a more native app-like experience.
 - **Table Pagination:** Implement pagination for the table to handle a large number of entries more efficiently.
-- **Enhanced UI:** Improve the user interface with better styling, animations, and user experience enhancements.
 - **Data Backup/Export:** Implement a feature to export the data as a JSON file for backup purposes.
 - **Sorting and Filtering:** Allow the user to sort and filter the entries in the table.
 

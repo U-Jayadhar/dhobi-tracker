@@ -77,25 +77,13 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
   try {
     const body = await req.json();
     const records = await getRecords();
-    const newRecords = {
-      date: new Date().toString(),
-      items: body,
-      totalPrice: body.reduce(
-        (
-          total: number,
-          clothes: { item: string; quantity: number },
-        ): number => {
-          if (clothes.item === "shirt" || clothes.item === "pant") {
-            return total + clothes.quantity * 10;
-          } else if (clothes.item === "saree" || clothes.item === "dress") {
-            return total + clothes.quantity * 20;
-          }
-          return total;
-        },
-        0,
-      ),
-    };
-    const updatedRecords = [newRecords, ...records];
+    const updatedRecords = [
+      {
+        date: new Date().toString(),
+        ...body,
+      },
+      ...records,
+    ];
 
     const lastRes = await saveRecords(updatedRecords);
     console.log(lastRes);
