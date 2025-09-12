@@ -23,18 +23,19 @@ The Dhobi Tracker is a personal project created to assist in tracking laundry ex
 - **Date and Time Tracking:** Automatically records the date and time of each entry.
 - **Monthly Table View:** Displays all entries for the current month in a tabular format.
 - **Total Monthly Cost:** Calculates and displays the total cost for the entire month.
-- **JSON File Storage:** Uses a local JSON file to store the data, ensuring data persistence without requiring a database.
+- **JSON File Storage:** Uses GitHub Gists for JSON file to store the data.
 
 ## Tech Stack
 
 - **[Next.js](https://nextjs.org/):** React framework for building performant web applications.
 - **[Tailwind CSS](https://tailwindcss.com/):** Utility-first CSS framework for rapid UI development.
+- **[GitHub Gist](https://gist.github.com/):**  A service for sharing code snippets, notes, and other small pieces of text or code.
 
 ## Data Storage
 
 This application uses a **JSON file-based storage system** to persist data. This approach was chosen for its simplicity and to avoid the complexity of setting up a database, making it ideal for a single-user application.
 
-- **File Location:** The data is stored in a file named `records.json`, located in the `data` directory at the root of the project (`/data/records.json`).
+- **File Location:** The data is stored in a file named `records.json`, located in the GitHub `Gist`.
 - **API Routes:** Next.js API routes are used to read and write data to the `records.json` file. The following API endpoints are available:
   - `GET /api/records`: Retrieves all records from the `records.json` file.
   - `POST /api/records`: Adds a new record to the `records.json` file.
