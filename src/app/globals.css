@@ -41,3 +41,23 @@ body {
   background-size: 1rem;
   background-position: right 0.7rem center;
 }
+
+.loader {
+  width: 1.5em;
+  aspect-ratio: 1 / 1;
+  border: 3px solid currentColor;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

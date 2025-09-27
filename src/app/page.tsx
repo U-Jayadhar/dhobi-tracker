@@ -13,8 +13,10 @@ export default function Home() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [focusMapQ, setFocusMapQ] = useState<{ [item: string]: boolean }>({});
   const [focusMapP, setFocusMapP] = useState<{ [item: string]: boolean }>({});
+  const [loader, setLoader] = useState(false);
 
   function handleSubmit() {
+    setLoader(true);
     fetch("/api/records", {
       method: "POST",
       headers: {
@@ -27,6 +29,10 @@ export default function Home() {
       }),
     }).then((response) => {
       if (response.ok) {
+        setLoader(false);
+        setTotalCount(0);
+        setTotalPrice(0);
+        setCartItems({});
         alert("Records saved successfully");
       } else {
         alert("Failed to save records");
@@ -171,9 +177,9 @@ export default function Home() {
               </button>
               <button
                 type="submit"
-                className="bg-green-400/70 text-white rounded-md px-4 py-2 cursor-pointer"
+                className="bg-green-400/70 text-white rounded-md px-4 py-2 cursor-pointer flex items-center"
               >
-                Submit
+                {loader ? <span className="loader"></span> : "Submit"}
               </button>
             </div>
           </>

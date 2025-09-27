@@ -29,7 +29,7 @@ The Dhobi Tracker is a personal project created to assist in tracking laundry ex
 
 - **[Next.js](https://nextjs.org/):** React framework for building performant web applications.
 - **[Tailwind CSS](https://tailwindcss.com/):** Utility-first CSS framework for rapid UI development.
-- **[GitHub Gist](https://gist.github.com/):**  A service for sharing code snippets, notes, and other small pieces of text or code.
+- **[GitHub Gist](https://gist.github.com/):** A service for sharing code snippets, notes, and other small pieces of text or code.
 
 ## Data Storage
 
