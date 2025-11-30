@@ -11,6 +11,7 @@ export default function Home() {
   }>({});
   const [totalCount, setTotalCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [sideNotes, setSideNotes] = useState("");
   const [focusMapQ, setFocusMapQ] = useState<{ [item: string]: boolean }>({});
   const [focusMapP, setFocusMapP] = useState<{ [item: string]: boolean }>({});
   const [loader, setLoader] = useState(false);
@@ -25,7 +26,9 @@ export default function Home() {
       body: JSON.stringify({
         items: totalCount,
         clothes: cartItems,
-        price: totalPrice,
+        total: totalPrice,
+        payment: false,
+        notes: sideNotes,
       }),
     }).then((response) => {
       if (response.ok) {
@@ -33,6 +36,7 @@ export default function Home() {
         setTotalCount(0);
         setTotalPrice(0);
         setCartItems({});
+        setSideNotes("");
         alert("Records saved successfully");
       } else {
         alert("Failed to save records");
@@ -68,8 +72,8 @@ export default function Home() {
                   min={0}
                   value={
                     focusMapQ[cloth.name] &&
-                    (cartItems[cloth.name]?.quantity === 0 ||
-                      isNaN(cartItems[cloth.name]?.quantity))
+                      (cartItems[cloth.name]?.quantity === 0 ||
+                        isNaN(cartItems[cloth.name]?.quantity))
                       ? ""
                       : cartItems[cloth.name]?.quantity || 0
                   }
@@ -113,8 +117,8 @@ export default function Home() {
                   min={0}
                   value={
                     focusMapP[cloth.name] &&
-                    (cartItems[cloth.name]?.price === 0 ||
-                      isNaN(cartItems[cloth.name]?.price))
+                      (cartItems[cloth.name]?.price === 0 ||
+                        isNaN(cartItems[cloth.name]?.price))
                       ? ""
                       : cartItems[cloth.name]?.price || cloth.price
                   }
@@ -146,6 +150,18 @@ export default function Home() {
               </div>
             </div>
           ))}
+          <div className="flex items-center gap-5">
+            <label className="w-20 bg-gray-200 p-2 rounded-md text-black text-center">
+              Notes
+            </label>
+            <input
+              className="border border-gray-300 rounded-md p-2 w-64"
+              type="text"
+              value={sideNotes}
+              onChange={(e) => setSideNotes(e.target.value)}
+              placeholder="Any additional notes..."
+            />
+          </div>
         </div>
         {totalCount === 0 && (
           <p className="text-yellow-400/80 mt-2">

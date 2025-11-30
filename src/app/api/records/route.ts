@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 
 const url = `https://api.github.com/gists/${process.env.GITHUB_GIST_ID}`;
@@ -49,7 +47,7 @@ async function saveRecords(records: any[]) {
       console.error(
         "Error updating Gist:",
         response.status,
-        response.statusText,
+        response.statusText
       );
       return false;
     }
@@ -68,7 +66,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to read records" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -90,19 +88,19 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
     if (lastRes) {
       return NextResponse.json(
         { message: "Records saved successfully" },
-        { status: 200 },
+        { status: 200 }
       );
     } else {
       return NextResponse.json(
         { error: "Failed to save records" },
-        { status: 500 },
+        { status: 500 }
       );
     }
   } catch (error) {
     console.error("Error saving records:", error);
     return NextResponse.json(
       { error: "Failed to save records" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

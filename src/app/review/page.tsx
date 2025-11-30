@@ -1,35 +1,42 @@
 "use client";
-import React from "react";
-import { useState, useEffect, useMemo } from "react";
+
+import React, { useEffect, useMemo, useState } from "react";
 
 type RecordType = {
   date: string;
   items: number;
   clothes: { [name: string]: { quantity: number; price: number } };
-  price: number;
+  total: number;
+  payment: boolean;
+  notes: string;
 };
 
-export default function ReviewTable() {
+export default function ReviewPage() {
   const [data, setData] = useState<RecordType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
-    const weekday = date.toLocaleString("en-US", { weekday: "long" });
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    return `${day} ${month} ${year}\n${hours}:${minutes}, ${weekday}`;
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return {
+      full: date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      time: date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      weekday: date.toLocaleString("en-IN", { weekday: "long" }),
+    };
   }
+
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/records");
-      const result = await response.json();
-
+      const res = await fetch("/api/records");
+      const result = await res.json();
       setData(result);
       setLoading(false);
     };
@@ -37,19 +44,19 @@ export default function ReviewTable() {
     fetchData();
   }, []);
 
-  const monthlyData = useMemo<{ month: string; records: RecordType[] }[]>(() => {
-    if (!data || data.length === 0) {
-      return [];
-    }
 
-    const grouped: Record<string, RecordType[]> = data.reduce((acc, record) => {
-      const month = new Date(record.date).toLocaleString("default", { month: "long" });
-      if (!acc[month]) {
-        acc[month] = [];
-      }
-      acc[month].push(record);
-      return acc;
-    }, {} as Record<string, RecordType[]>);
+  const monthlyData = useMemo(() => {
+    const grouped: Record<string, RecordType[]> = {};
+
+    data.forEach((record) => {
+      const month = new Date(record.date).toLocaleString("en-IN", {
+        month: "long",
+        year: "numeric",
+      });
+
+      if (!grouped[month]) grouped[month] = [];
+      grouped[month].push(record);
+    });
 
     return Object.entries(grouped).map(([month, records]) => ({
       month,
@@ -57,108 +64,145 @@ export default function ReviewTable() {
     }));
   }, [data]);
 
+
   const overallTotals = useMemo(() => {
-    if (!data || data.length === 0) {
-      return { totalClothes: 0, totalTimes: 0, price: 0 };
-    }
-
-    const totalClothes = data.reduce((total, record) => total + record.items, 0);
-    const totalTimes = data.length;
-    const price = data.reduce((total, record) => total + record.price, 0);
-
-    return { totalClothes, totalTimes, price };
+    return {
+      totalClothes: data.reduce((t, r) => t + r.items, 0),
+      totalTimes: data.length,
+      totalPrice: data.reduce((t, r) => t + r.total, 0),
+    };
   }, [data]);
 
+
   return (
-    <div className="font-sec flex flex-col flex-grow items-center gap-5 text-center my-8">
-      <div className="flex gap-4   items-center">
+    <div className="font-sec max-w-md mx-auto px-4 py-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
         <a
           href="/"
-          className="flex items-center border border-gray-200 rounded-md p-1 text-sm"
+          className="flex items-center border rounded-md px-2 py-1 text-sm text-white border-gray-600"
         >
-          <span className="material-symbols-outlined font-light">
+          <span className="material-symbols-outlined text-lg text-white">
             chevron_left
           </span>
           Back
         </a>
-        <h1 className="text-2xl font-bold">Review previous records</h1>
+        <h1 className="text-xl font-bold text-white">Review Records</h1>
       </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : data.length === 0 ? (
-        <p>No records found.</p>
-      ) : (
-        <table className="mt-10 rounded-lg overflow-hidden leading-normal">
-          <thead>
-            <tr className="bg-gray-100 font-prim text-center">
-              <th className="text-black border-b border-r border-black p-3">Date</th>
-              <th className="text-black border-b border-r border-black p-3">Items</th>
-              <th className="text-black border-b border-black p-3">Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="h-2 font-bold text-blue-400"> 
-              <td className="border border-gray-300 p-3">Total</td>
-              <td className="border border-gray-300 p-3">
-                Clothes: {overallTotals.totalClothes} <br />
-                Total Times: {overallTotals.totalTimes}
-              </td>
-              <td className="border border-gray-300 p-3">Rs.{overallTotals.price}/-</td>
-            </tr>
 
+      {loading ? (
+        <p className="text-center text-white">Loading...</p>
+      ) : data.length === 0 ? (
+        <p className="text-center text-white">No records found.</p>
+      ) : (
+        <>
+          <div className="bg-gray-100 rounded-xl p-4 shadow-sm grid grid-cols-3 text-center text-sm">
+            <div>
+              <p className="text-gray-500">Clothes</p>
+              <p className="font-bold text-black">{overallTotals.totalClothes}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Visits</p>
+              <p className="font-bold text-black">{overallTotals.totalTimes}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Total</p>
+              <p className="font-bold text-black">₹{overallTotals.totalPrice}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
             {monthlyData.map(({ month, records }) => {
-              const totalClothes = records.reduce((total, record) => total + record.items, 0);
-              const price = records.reduce((total, record) => total + record.price, 0);
+              const monthClothes = records.reduce((t, r) => t + r.items, 0);
+              const monthTotal = records.reduce((t, r) => t + r.total, 0);
 
               return (
-                <React.Fragment key={month}>
-                  <tr className="h-2 font-bold text-yellow-400">
-                    <td className="border border-gray-300 p-3">{month}</td>
-                    <td className="border border-gray-300 p-3">
-                      Clothes: {totalClothes} <br />
-                      Total Times: {records.length}
-                    </td>
-                    <td className="border border-gray-300 p-3">Rs.{price}/-</td>
-                  </tr>
-                  {records.map(
-                    (
-                      record: {
-                        date: string;
-                        items: number;
-                        clothes: {
-                          [name: string]: { quantity: number; price: number };
-                        };
-                        price: number;
-                      },
-                      index,
-                    ) => (
-                      <tr key={`${month}-${index}`} className="text-white">
-                        <td
-                          className="border border-gray-300 p-3"
-                          style={{ whiteSpace: "pre-line" }}
+                <details
+                  key={month}
+                  className="bg-white rounded-xl shadow border open:shadow-md"
+                >
+                  <summary className="cursor-pointer list-none p-4 flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-black">{month}</p>
+                      <p className="text-xs text-gray-600">
+                        {records.length} visits • {monthClothes} clothes
+                      </p>
+                    </div>
+                    <p className="font-semibold text-black">₹{monthTotal}</p>
+                  </summary>
+
+                  <div className="border-t border-black px-4 py-4 space-y-3">
+                    {records.map((record, idx) => {
+                      const date = formatDate(record.date);
+
+                      return (
+                        <details
+                          key={idx}
+                          className="bg-gray-200 rounded-lg p-3"
                         >
-                          {formatDate(record.date)}
-                        </td>
-                        <td className="border border-gray-300 p-3">
-                          <div className="flex flex-col text-start">
-                            {Object.entries(record.clothes).map(
-                              ([item, { quantity, price }], idx) => (
-                                <span key={idx}>
-                                  {item.charAt(0).toUpperCase() + item.slice(1)} - {quantity}(₹{price})
+                          <summary className="cursor-pointer list-none">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium text-black">
+                                  {date.full}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {date.time} • {date.weekday.slice(0, 3)}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-black">
+                                  ₹{record.total}
+                                </p>
+                                <span
+                                  className={`text-xs ${record.payment
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                    }`}
+                                >
+                                  {record.payment ? "Paid" : "Pending"}
                                 </span>
-                              )
-                            )}
+                              </div>
+                            </div>
+                          </summary>
+
+                          <div className="mt-3 text-sm space-y-2 text-gray-800">
+                            <div>
+                              <p className="font-medium text-gray-900">Clothes</p>
+                              <div className="pl-2 mt-1 space-y-1">
+                                {Object.entries(record.clothes).map(
+                                  ([name, { quantity, price }], i) => (
+                                    <p key={i} className="text-gray-800">
+                                      {name.charAt(0).toUpperCase() +
+                                        name.slice(1)}{" "}
+                                      × {quantity} (₹{price})
+                                    </p>
+                                  )
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between border-t pt-2 border-gray-300">
+                              <span>Items</span>
+                              <span>{record.items}</span>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <span>Notes</span>
+                              <span>
+                                {record.notes === "" ? "-" : record.notes}
+                              </span>
+                            </div>
                           </div>
-                        </td>
-                        <td className="border border-gray-300 p-3">Rs.{record.price}/-</td>
-                      </tr>
-                    )
-                  )}
-                </React.Fragment>
+                        </details>
+                      );
+                    })}
+                  </div>
+                </details>
               );
             })}
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
     </div>
   );
