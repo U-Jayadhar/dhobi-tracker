@@ -175,7 +175,7 @@ export default function ReviewPage() {
                                     <p key={i} className="text-gray-800">
                                       {name.charAt(0).toUpperCase() +
                                         name.slice(1)}{" "}
-                                      × {quantity} (₹{price})
+                                      x {quantity} (₹{price})
                                     </p>
                                   )
                                 )}
@@ -187,12 +187,11 @@ export default function ReviewPage() {
                               <span>{record.items}</span>
                             </div>
 
-                            <div className="flex justify-between">
-                              <span>Notes</span>
-                              <span>
-                                {record.notes === "" ? "-" : record.notes}
-                              </span>
-                            </div>
+                            {record.notes && (
+                              <p className="text-xs italic text-gray-600 border-t pt-2">
+                                “{record.notes}”
+                              </p>
+                            )}
                           </div>
                         </details>
                       );
