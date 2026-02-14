@@ -72,8 +72,8 @@ export default function Home() {
                   min={0}
                   value={
                     focusMapQ[cloth.name] &&
-                      (cartItems[cloth.name]?.quantity === 0 ||
-                        isNaN(cartItems[cloth.name]?.quantity))
+                    (cartItems[cloth.name]?.quantity === 0 ||
+                      isNaN(cartItems[cloth.name]?.quantity))
                       ? ""
                       : cartItems[cloth.name]?.quantity || 0
                   }
@@ -117,8 +117,8 @@ export default function Home() {
                   min={0}
                   value={
                     focusMapP[cloth.name] &&
-                      (cartItems[cloth.name]?.price === 0 ||
-                        isNaN(cartItems[cloth.name]?.price))
+                    (cartItems[cloth.name]?.price === 0 ||
+                      isNaN(cartItems[cloth.name]?.price))
                       ? ""
                       : cartItems[cloth.name]?.price || cloth.price
                   }

@@ -15,7 +15,6 @@ export default function ReviewPage() {
   const [data, setData] = useState<RecordType[]>([]);
   const [loading, setLoading] = useState(true);
 
-
   function formatDate(dateString: string) {
     const date = new Date(dateString);
     return {
@@ -32,7 +31,6 @@ export default function ReviewPage() {
     };
   }
 
-
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("/api/records");
@@ -43,7 +41,6 @@ export default function ReviewPage() {
 
     fetchData();
   }, []);
-
 
   const monthlyData = useMemo(() => {
     const grouped: Record<string, RecordType[]> = {};
@@ -64,20 +61,27 @@ export default function ReviewPage() {
     }));
   }, [data]);
 
-
   const overallTotals = useMemo(() => {
     return {
       totalClothes: data.reduce((t, r) => t + r.items, 0),
       totalTimes: data.length,
       totalPrice: data.reduce((t, r) => t + r.total, 0),
+      totalUnpaidClothes: data.reduce(
+        (t, r) => t + (r.payment ? 0 : r.items),
+        0,
+      ),
+      totalUnpaidTimes: data.reduce((t, r) => t + (r.payment ? 0 : 1), 0),
+      totalUnpaidPrice: data.reduce((t, r) => t + (r.payment ? 0 : r.total), 0),
+      totalPaidClothes: data.reduce((t, r) => t + (r.payment ? r.items : 0), 0),
+      totalPaidTimes: data.reduce((t, r) => t + (r.payment ? 1 : 0), 0),
+      totalPaidPrice: data.reduce((t, r) => t + (r.payment ? r.total : 0), 0),
     };
   }, [data]);
-
 
   return (
     <div className="font-sec max-w-md mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <a
           href="/"
           className="flex items-center border rounded-md px-2 py-1 text-sm text-white border-gray-600"
@@ -96,20 +100,89 @@ export default function ReviewPage() {
         <p className="text-center text-white">No records found.</p>
       ) : (
         <>
-          <div className="bg-gray-100 rounded-xl p-4 shadow-sm grid grid-cols-3 text-center text-sm">
-            <div>
-              <p className="text-gray-500">Clothes</p>
-              <p className="font-bold text-black">{overallTotals.totalClothes}</p>
+          <details className="bg-gray-100 rounded-xl border cursor-pointer list-none text-center">
+            <summary className="p-4 grid grid-cols-4 text-center items-center text-sm gap-3">
+              {/* <p className="text-red-500 text-xs mb-1">Pending</p> */}
+              <span className="material-symbols-outlined text-red-500">
+                schedule
+              </span>
+              <div>
+                <p className="text-black">Clothes</p>
+                <p className="font-bold text-red-500">
+                  {overallTotals.totalUnpaidClothes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Visits</p>
+                <p className="font-bold text-red-500">
+                  {overallTotals.totalUnpaidTimes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Total</p>
+                <p className="font-bold text-red-500">
+                  ₹{overallTotals.totalUnpaidPrice}
+                </p>
+              </div>
+            </summary>
+            <div className="p-4 grid grid-cols-4 text-center items-center text-sm gap-3">
+              {/* <p className="text-green-500 text-xs mb-1">Completed</p> */}
+              <span className="material-symbols-outlined text-green-500">
+                check_circle
+              </span>
+              <div>
+                <p className="text-black">Clothes</p>
+                <p className="font-bold text-green-500">
+                  {overallTotals.totalPaidClothes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Visits</p>
+                <p className="font-bold text-green-500">
+                  {overallTotals.totalPaidTimes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Total</p>
+                <p className="font-bold text-green-500">
+                  ₹{overallTotals.totalPaidPrice}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500">Visits</p>
-              <p className="font-bold text-black">{overallTotals.totalTimes}</p>
+            <div className="p-4 grid grid-cols-4 text-center items-center text-sm gap-3">
+              {/* <p className="text-gray-700 text-xs mb-1">All</p> */}
+              <span className="material-symbols-outlined text-gray-700">
+                all_inclusive
+              </span>
+              <div>
+                <p className="text-black">Clothes</p>
+                <p className="font-bold text-gray-700">
+                  {overallTotals.totalClothes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Visits</p>
+                <p className="font-bold text-gray-700">
+                  {overallTotals.totalTimes}
+                </p>
+              </div>
+              <div>
+                <p className="text-black">Total</p>
+                <p className="font-bold text-gray-700">
+                  ₹{overallTotals.totalPrice}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500">Total</p>
-              <p className="font-bold text-black">₹{overallTotals.totalPrice}</p>
-            </div>
-          </div>
+            <a
+              href="/payment"
+              className="inline-block text-orange-500 my-4 text-sm hover:underline"
+            >
+              <span className="material-symbols-outlined align-middle">
+                edit
+              </span>{" "}
+              Edit Payment
+            </a>
+          </details>
 
           <div className="space-y-4">
             {monthlyData.map(({ month, records }) => {
@@ -119,9 +192,9 @@ export default function ReviewPage() {
               return (
                 <details
                   key={month}
-                  className="bg-white rounded-xl shadow border open:shadow-md"
+                  className="cursor-pointer list-none bg-white rounded-xl border"
                 >
-                  <summary className="cursor-pointer list-none p-4 flex justify-between items-center">
+                  <summary className="p-4 flex justify-between items-center">
                     <div>
                       <p className="font-semibold text-black">{month}</p>
                       <p className="text-xs text-gray-600">
@@ -155,10 +228,11 @@ export default function ReviewPage() {
                                   ₹{record.total}
                                 </p>
                                 <span
-                                  className={`text-xs ${record.payment
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                    }`}
+                                  className={`text-xs ${
+                                    record.payment
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }`}
                                 >
                                   {record.payment ? "Paid" : "Pending"}
                                 </span>
@@ -168,7 +242,9 @@ export default function ReviewPage() {
 
                           <div className="mt-3 text-sm space-y-2 text-gray-800">
                             <div>
-                              <p className="font-medium text-gray-900">Clothes</p>
+                              <p className="font-medium text-gray-900">
+                                Clothes
+                              </p>
                               <div className="pl-2 mt-1 space-y-1">
                                 {Object.entries(record.clothes).map(
                                   ([name, { quantity, price }], i) => (
@@ -177,7 +253,7 @@ export default function ReviewPage() {
                                         name.slice(1)}{" "}
                                       x {quantity} (₹{price})
                                     </p>
-                                  )
+                                  ),
                                 )}
                               </div>
                             </div>

@@ -47,7 +47,7 @@ async function saveRecords(records: any[]) {
       console.error(
         "Error updating Gist:",
         response.status,
-        response.statusText
+        response.statusText,
       );
       return false;
     }
@@ -59,6 +59,7 @@ async function saveRecords(records: any[]) {
   }
 }
 
+// GET /api/records - Fetch all records
 export async function GET(req: NextRequest, { params }: { params: any }) {
   try {
     const records = await getRecords();
@@ -66,11 +67,12 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to read records" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
+// POST /api/records - Add a new record
 export async function POST(req: NextRequest, { params }: { params: any }) {
   try {
     const body = await req.json();
@@ -88,19 +90,52 @@ export async function POST(req: NextRequest, { params }: { params: any }) {
     if (lastRes) {
       return NextResponse.json(
         { message: "Records saved successfully" },
-        { status: 200 }
+        { status: 200 },
       );
     } else {
       return NextResponse.json(
         { error: "Failed to save records" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
     console.error("Error saving records:", error);
     return NextResponse.json(
       { error: "Failed to save records" },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+// PATCH /api/records - Save full records list (for payment page)
+export async function PATCH(req: NextRequest, { params }: { params: any }) {
+  try {
+    const body = await req.json();
+    if (!Array.isArray(body)) {
+      return NextResponse.json(
+        { error: "Payload must be an array of records" },
+        { status: 400 },
+      );
+    }
+
+    const lastRes = await saveRecords(body);
+    console.log(lastRes);
+    if (lastRes) {
+      return NextResponse.json(
+        { message: "Records updated successfully" },
+        { status: 200 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to update records" },
+      { status: 500 },
+    );
+  } catch (error) {
+    console.error("Error updating records:", error);
+    return NextResponse.json(
+      { error: "Failed to update records" },
+      { status: 500 },
     );
   }
 }
