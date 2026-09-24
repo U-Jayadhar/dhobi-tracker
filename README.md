@@ -72,11 +72,4 @@ This application uses a **JSON file-based storage system** to persist data. This
 4.  The entries for the current month will be displayed in a table.
 5.  The total cost for the month will be displayed below the table.
 
-## Upcoming Features
-
-- **Progressive Web App (PWA) Support:** Enable the application to be installed as a PWA, allowing offline access and a more native app-like experience.
-- **Table Pagination:** Implement pagination for the table to handle a large number of entries more efficiently.
-- **Data Backup/Export:** Implement a feature to export the data as a JSON file for backup purposes.
-- **Sorting and Filtering:** Allow the user to sort and filter the entries in the table.
-
 **With 💖 for my mom**
